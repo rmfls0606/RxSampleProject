@@ -12,6 +12,10 @@ import RxCocoa
 
 final class NumbersViewController: BaseViewController {
     
+    //MARK: - Property
+    private let disposeBag = DisposeBag()
+    
+    //MARK: - View
     private let stackView: UIStackView = {
         let view = UIStackView()
         view.axis = .vertical
@@ -127,5 +131,12 @@ final class NumbersViewController: BaseViewController {
     
     override func configureView() {
         view.backgroundColor = .white
+        
+        Observable.combineLatest(number1.rx.text.orEmpty, number2.rx.text.orEmpty, number3.rx.text.orEmpty){ textValue1, textValue2, textValue3 in
+            return (Int(textValue1) ?? 0) + (Int(textValue2) ?? 0) + (Int(textValue3) ?? 0)
+        }
+        .map{ $0.description }
+        .bind(to: resultLabel.rx.text)
+        .disposed(by: disposeBag)
     }
 }
