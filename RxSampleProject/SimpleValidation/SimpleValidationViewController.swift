@@ -14,6 +14,10 @@ private let minimalUsernameLength = 5
 private let minimalPasswordLength = 5
 
 final class SimpleValidationViewController: BaseViewController {
+    //MARK: - Property
+    private let disposeBag = DisposeBag()
+    
+    //MARK: - View
     private let usernameTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Username"
@@ -32,7 +36,6 @@ final class SimpleValidationViewController: BaseViewController {
     
     private let usernameValidationLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .red
         label.font = .systemFont(ofSize: 12)
         return label
     }()
@@ -56,6 +59,7 @@ final class SimpleValidationViewController: BaseViewController {
     private let passwordValidationLabel: UILabel = {
         let label = UILabel()
         label.textColor = .red
+        label.text = "\(minimalPasswordLength)자 이상 입력해주세요."
         label.font = .systemFont(ofSize: 12)
         return label
     }()
@@ -123,5 +127,57 @@ final class SimpleValidationViewController: BaseViewController {
     
     override func configureView() {
         view.backgroundColor = .white
+        
+        let usernameValid = usernameTextField.rx.text.orEmpty
+            .map{ $0.count >= minimalUsernameLength }
+            .share(replay: 1)
+        
+        let passwordValid = passwordTextField.rx.text.orEmpty
+            .map{ $0.count >= minimalPasswordLength }
+            .share(replay: 1)
+        
+        let everyhingValid = Observable.combineLatest(usernameValid, passwordValid)
+            .map{ $0 && $1}
+            .share(replay: 1)
+        
+        usernameValid
+            .bind(to: passwordTextField.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        usernameValid
+            .bind(with: self, onNext: { owner, valid in
+                if valid{
+                    owner.usernameValidationLabel.textColor = .green
+                    owner.usernameValidationLabel.text = "정상적으로 입력되었습니다."
+                }else{
+                    owner.usernameValidationLabel.textColor = .red
+                    owner.usernameValidationLabel.text = "\(minimalUsernameLength)자 이상 입력해주세요."
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        passwordValid
+            .bind(with: self, onNext: { owner, valid in
+                if valid{
+                    owner.passwordValidationLabel.textColor = .green
+                    owner.passwordValidationLabel.text = "정상적으로 입력되었습니다."
+                }else{
+                    owner.passwordValidationLabel.textColor = .red
+                    owner.passwordValidationLabel.text = "\(minimalPasswordLength)자 이상 입력해주세요."
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        everyhingValid
+            .bind(to: successButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        successButton.rx.tap
+            .bind(with: self) { owner, value in
+                owner.showAlert(title: "RxExample", message: "This is wonderful") {
+                    
+                }
+            }
+            .disposed(by: disposeBag)
     }
 }
