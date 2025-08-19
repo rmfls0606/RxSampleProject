@@ -125,7 +125,8 @@ final class NumbersViewController: BaseViewController {
         }
         
         resultLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
+            make.width.equalTo(100)
+            make.height.equalTo(30)
         }
     }
     
