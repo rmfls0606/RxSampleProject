@@ -11,6 +11,12 @@ import RxCocoa
 
 final class HomeworkViewController: BaseViewController {
 
+    //MARK: - Property
+    private let recommendedNameList = Observable.just(Person.sampleUsers)
+    
+    private let disposeBag = DisposeBag()
+    
+    //MARK: - View
     private let tableView: UITableView = {
         let view = UITableView()
         view.register(PersonTableViewCell.self, forCellReuseIdentifier: PersonTableViewCell.identifier)
@@ -52,6 +58,13 @@ final class HomeworkViewController: BaseViewController {
         view.backgroundColor = .white
         
         navigationItem.titleView = searchBar
+    }
+    
+    override func configureBind() {
+        recommendedNameList
+            .bind(to: collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)){ (item, element, cell) in
+            }
+            .disposed(by: disposeBag)
     }
 
     private func layout() -> UICollectionViewFlowLayout {
