@@ -63,6 +63,7 @@ final class HomeworkViewController: BaseViewController {
     override func configureBind() {
         recommendedNameList
             .bind(to: collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)){ (item, element, cell) in
+                cell.configureData(name: element.name)
             }
             .disposed(by: disposeBag)
     }

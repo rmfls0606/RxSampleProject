@@ -32,5 +32,9 @@ final class UserCollectionViewCell: BaseCollectionViewCell {
         layer.borderWidth = 1
         layer.borderColor = UIColor.black.cgColor
     }
+    
+    func configureData(name: String){
+        label.text = name
+    }
 }
 
