@@ -84,6 +84,19 @@ final class HomeworkViewController: BaseViewController {
                 owner.recommendedNameList.onNext(result)
             }
             .disposed(by: disposeBag)
+        
+        searchBar.rx.searchButtonClicked
+            .subscribe(with: self) { owner, value in
+                guard let name = owner.searchBar.text else { return }
+                
+                let newValue = Person(name: name, email: "\(value)@example.com", profileImage: "")
+                var result = try! owner.personList.value()
+                result.append(newValue)
+                
+                owner.personList.onNext(result)
+            }
+            .disposed(by: disposeBag)
+
     }
 
     private func layout() -> UICollectionViewFlowLayout {
