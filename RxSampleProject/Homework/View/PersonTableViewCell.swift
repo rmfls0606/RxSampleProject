@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class PersonTableViewCell: BaseTableViewCell {
     
@@ -65,6 +66,14 @@ final class PersonTableViewCell: BaseTableViewCell {
      
     override func configureView() {
         self.selectionStyle = .none
+    }
+    
+    func configureData(person: Person){
+        if let image_url = URL(string: person.profileImage){
+            profileImageView.kf.setImage(with: image_url)
+        }
+        
+        usernameLabel.text = person.name
     }
 }
 

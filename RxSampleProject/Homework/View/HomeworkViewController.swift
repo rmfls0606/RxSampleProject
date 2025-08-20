@@ -71,6 +71,7 @@ final class HomeworkViewController: BaseViewController {
         personList
             .bind(to: tableView.rx.items){ (tableView, row, element) in
                 let cell = tableView.dequeueReusableCell(withIdentifier: PersonTableViewCell.identifier) as! PersonTableViewCell
+                cell.configureData(person: element)
                 return cell
             }
             .disposed(by: disposeBag)
