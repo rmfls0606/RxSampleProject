@@ -12,7 +12,7 @@ import RxCocoa
 final class HomeworkViewController: BaseViewController {
 
     //MARK: - Property
-    private let recommendedNameList = Observable.just(Person.sampleUsers)
+    private let recommendedNameList = BehaviorSubject<[String]>(value: [])
     private var personList = BehaviorSubject<[Person]>(value: Person.sampleUsers)
     
     private let disposeBag = DisposeBag()
@@ -64,7 +64,7 @@ final class HomeworkViewController: BaseViewController {
     override func configureBind() {
         recommendedNameList
             .bind(to: collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)){ (item, element, cell) in
-                cell.configureData(name: element.name)
+                cell.configureData(name: element)
             }
             .disposed(by: disposeBag)
         
@@ -73,6 +73,15 @@ final class HomeworkViewController: BaseViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: PersonTableViewCell.identifier) as! PersonTableViewCell
                 cell.configureData(person: element)
                 return cell
+            }
+            .disposed(by: disposeBag)
+        
+        tableView.rx.modelSelected(Person.self)
+            .distinctUntilChanged({ $0.name == $1.name})
+            .bind(with: self) { owner, value in
+                var result = try! owner.recommendedNameList.value()
+                result.append(value.name)
+                owner.recommendedNameList.onNext(result)
             }
             .disposed(by: disposeBag)
     }
