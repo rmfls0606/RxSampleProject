@@ -29,7 +29,7 @@ final class PersonTableViewCell: BaseTableViewCell {
     
     let detailButton: UIButton = {
         let button = UIButton()
-        button.setTitle("받기", for: .normal)
+        button.setTitle("더보기", for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         button.isUserInteractionEnabled = true
         button.backgroundColor = .lightGray
@@ -71,6 +71,8 @@ final class PersonTableViewCell: BaseTableViewCell {
     func configureData(person: Person){
         if let image_url = URL(string: person.profileImage){
             profileImageView.kf.setImage(with: image_url)
+        }else{
+            profileImageView.image = nil
         }
         
         usernameLabel.text = person.name
