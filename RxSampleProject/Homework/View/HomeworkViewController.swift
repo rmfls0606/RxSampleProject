@@ -13,6 +13,7 @@ final class HomeworkViewController: BaseViewController {
 
     //MARK: - Property
     private let recommendedNameList = Observable.just(Person.sampleUsers)
+    private var personList = BehaviorSubject<[Person]>(value: Person.sampleUsers)
     
     private let disposeBag = DisposeBag()
     
@@ -64,6 +65,13 @@ final class HomeworkViewController: BaseViewController {
         recommendedNameList
             .bind(to: collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)){ (item, element, cell) in
                 cell.configureData(name: element.name)
+            }
+            .disposed(by: disposeBag)
+        
+        personList
+            .bind(to: tableView.rx.items){ (tableView, row, element) in
+                let cell = tableView.dequeueReusableCell(withIdentifier: PersonTableViewCell.identifier) as! PersonTableViewCell
+                return cell
             }
             .disposed(by: disposeBag)
     }
