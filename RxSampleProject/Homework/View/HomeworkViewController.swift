@@ -86,7 +86,7 @@ final class HomeworkViewController: BaseViewController {
                 cell.detailButton.rx.tap
                     .asDriver()
                     .drive(with: self) { owner, _ in
-                        let vc = DetailViewController()
+                        let vc = DetailViewController(name: element.name)
                         owner.navigationController?.pushViewController(vc, animated: true)
                     }
                     .disposed(by: cell.disposeBag)
