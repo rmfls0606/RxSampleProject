@@ -15,6 +15,8 @@ final class HomeworkViewController: BaseViewController {
     private let recommendedNameList = BehaviorSubject<[String]>(value: [])
     private var personList = BehaviorSubject<[Person]>(value: Person.sampleUsers)
     
+    private let viewModel = HomeworkViewModel()
+    
     private let disposeBag = DisposeBag()
     
     //MARK: - View
@@ -62,41 +64,27 @@ final class HomeworkViewController: BaseViewController {
     }
     
     override func configureBind() {
-        recommendedNameList
+        let input = HomeworkViewModel.Input(
+            tableViewModelSelected: tableView.rx.modelSelected(Person.self),
+            searchButtonClicked: searchBar.rx.searchButtonClicked,
+            searchInputText: searchBar.rx.text.orEmpty
+        )
+        
+        let output = viewModel.transform(input: input)
+        
+        output.selectedUserReplay
             .bind(to: collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)){ (item, element, cell) in
                 cell.configureData(name: element)
             }
             .disposed(by: disposeBag)
         
-        personList
+        output.userListReplay
             .bind(to: tableView.rx.items){ (tableView, row, element) in
                 let cell = tableView.dequeueReusableCell(withIdentifier: PersonTableViewCell.identifier) as! PersonTableViewCell
                 cell.configureData(person: element)
                 return cell
             }
             .disposed(by: disposeBag)
-        
-        tableView.rx.modelSelected(Person.self)
-            .distinctUntilChanged({ $0.name == $1.name})
-            .bind(with: self) { owner, value in
-                var result = try! owner.recommendedNameList.value()
-                result.append(value.name)
-                owner.recommendedNameList.onNext(result)
-            }
-            .disposed(by: disposeBag)
-        
-        searchBar.rx.searchButtonClicked
-            .subscribe(with: self) { owner, value in
-                guard let name = owner.searchBar.text else { return }
-                
-                let newValue = Person(name: name, email: "\(value)@example.com", profileImage: "")
-                var result = try! owner.personList.value()
-                result.append(newValue)
-                
-                owner.personList.onNext(result)
-            }
-            .disposed(by: disposeBag)
-
     }
 
     private func layout() -> UICollectionViewFlowLayout {
