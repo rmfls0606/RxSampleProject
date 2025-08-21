@@ -89,7 +89,7 @@ final class HomeworkViewController: BaseViewController {
                         let vc = DetailViewController()
                         owner.navigationController?.pushViewController(vc, animated: true)
                     }
-                    .disposed(by: self.disposeBag)
+                    .disposed(by: cell.disposeBag)
 
                 
                 return cell

@@ -8,8 +8,12 @@
 import UIKit
 import SnapKit
 import Kingfisher
+import RxSwift
+import RxCocoa
 
 final class PersonTableViewCell: BaseTableViewCell {
+    
+    private(set) var disposeBag = DisposeBag()
     
     let usernameLabel: UILabel = {
         let label = UILabel()
@@ -36,6 +40,12 @@ final class PersonTableViewCell: BaseTableViewCell {
         button.layer.cornerRadius = 16
         return button
     }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
+    }
     
     override func configureHierarchy() {
         contentView.addSubview(usernameLabel)
