@@ -82,6 +82,16 @@ final class HomeworkViewController: BaseViewController {
             .bind(to: tableView.rx.items){ (tableView, row, element) in
                 let cell = tableView.dequeueReusableCell(withIdentifier: PersonTableViewCell.identifier) as! PersonTableViewCell
                 cell.configureData(person: element)
+                
+                cell.detailButton.rx.tap
+                    .asDriver()
+                    .drive(with: self) { owner, _ in
+                        let vc = DetailViewController()
+                        owner.navigationController?.pushViewController(vc, animated: true)
+                    }
+                    .disposed(by: self.disposeBag)
+
+                
                 return cell
             }
             .disposed(by: disposeBag)
