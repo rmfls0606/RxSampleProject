@@ -13,6 +13,8 @@ import RxCocoa
 final class NumbersViewController: BaseViewController {
     
     //MARK: - Property
+    private let viewModel = NumberViewModel()
+    
     private let disposeBag = DisposeBag()
     
     //MARK: - View
@@ -133,11 +135,20 @@ final class NumbersViewController: BaseViewController {
     override func configureView() {
         view.backgroundColor = .white
         
-        Observable.combineLatest(number1.rx.text.orEmpty, number2.rx.text.orEmpty, number3.rx.text.orEmpty){ textValue1, textValue2, textValue3 in
-            return (Int(textValue1) ?? 0) + (Int(textValue2) ?? 0) + (Int(textValue3) ?? 0)
-        }
-        .map{ $0.description }
-        .bind(to: resultLabel.rx.text)
-        .disposed(by: disposeBag)
+        
+    }
+    
+    override func configureBind() {
+        let input = NumberViewModel.Input(
+            number1Text: number1.rx.text.orEmpty,
+            number2Text: number2.rx.text.orEmpty,
+            number3Text: number3.rx.text.orEmpty
+        )
+        
+        let output = viewModel.transform(input: input)
+        
+        output.sumText
+            .bind(to: resultLabel.rx.text)
+            .disposed(by: disposeBag)
     }
 }
